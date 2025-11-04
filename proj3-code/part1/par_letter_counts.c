@@ -38,8 +38,41 @@ int main(int argc, char **argv) {
         // No files to consume, return immediately
         return 0;
     }
+    char results[argc];
 
-    // TODO Create a pipe for child processes to write their results
+    int fds[2];
+    int child_pipe = pipe(fds);
+    if (child_pipe < 0){
+        perror("pipe");
+        return 1;
+    }
+    for (int i = 0; i < argc; i ++){
+        pid_t child_pid = fork();
+        if (child_pid == -1) {
+            perror("fork");
+            close(fds[0]);
+            close(fds[1]);
+            return 1;
+        } else if (child_pid == 0){
+            if (close(fds[0])){
+                perror("close");
+                close(fds[1]);
+                exit(1);
+            }
+
+            if (process_file(argv[i], fds[1]) == -1){
+                close(fds[0]);
+                close(fds[1]);
+                return -1;
+            }
+
+            if (write()){
+
+            }
+        }
+    }
+
+
     // TODO Fork a child to analyze each specified file (names are argv[1], argv[2], ...)
     // TODO Aggregate all the results together by reading from the pipe in the parent
 
