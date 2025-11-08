@@ -18,7 +18,12 @@
  * Returns 0 on success or -1 on error.
  */
 int count_letters(const char *file_name, int *counts) {
-    return 0;
+	int fd = open(file_name,O_RDONLY,0777) // ok so maybe this shouldn't be all permissions but here we are 
+	if(fd == -1){
+		perror("open"); 		 
+		return -1;
+	}
+
 }
 
 /*
@@ -30,6 +35,18 @@ int count_letters(const char *file_name, int *counts) {
  * Returns 0 on success or -1 on error
  */
 int process_file(const char *file_name, int out_fd) {
+    int counts[ALPHABET_LEN] = {0};
+    int result = count_letters(file_name, &counts);
+    if(result == -1){
+   	//TODO error
+    	return -1;
+    }
+    else if (write(pipe_fds[1], &counts, sizeof(int)) == -1) {
+    	perror("write");
+        close(pipe_fds[1]);
+	return -1;
+     }
+
     return 0;
 }
 
@@ -38,6 +55,70 @@ int main(int argc, char **argv) {
         // No files to consume, return immediately
         return 0;
     }
+    // unsure it this needs adding, directly copied from code examples.
+    int pipe_fds[2];
+    if (pipe(pipe_fds) == -1) {
+        perror("pipe");
+        return -1;
+    }
+    // again same thing here
+    for (int i = 0; i < n; i++) {
+        pid_t child_pid = fork();
+        if (child_pid == -1) {
+            perror("fork");
+            close(pipe_fds[0]);
+            close(pipe_fds[1]);
+            return -1;
+        } else if (child_pid == 0) {
+            // Close read end of pipe
+            if (close(pipe_fds[0]) == -1) {
+                perror("close");
+                close(pipe_fds[0]);
+                exit(1);
+            }
+	    // I think we have redundancy here. Rework to make use of process file function
+            int result = process_file(file_names[i], pipe_fds[1]);
+	    if(result == -1){
+	    //TODO error checking
+	    exit(1); // what is the number for error on exit
+	    }
+            if (close(pipe_fds[1]) == -1) {
+                perror("close");
+                exit(1);
+            }
+
+            exit(0);
+        }
+    }
+    // Only reached by parent process
+    // Close write end of pipe
+    if (close(pipe_fds[1]) == -1) {
+        perror("close");
+        close(pipe_fds[0]);
+        return -1;
+    }
+
+    int temp;
+    int nbytes;
+    // this should be changed to that lower for loop style. I think
+    while ((nbytes = read(pipe_fds[0], &temp, sizeof(int))) > 0) {
+        printf("Result: %d\n", temp);
+    }
+    if (nbytes == -1) {
+        perror("read");
+        close(pipe_fds[0]);
+        return -1;
+    }
+
+    if (close(pipe_fds[0]) == -1) {
+        perror("close");
+        return -1;
+    }
+    return 0;
+    
+
+    
+
 
     // TODO Create a pipe for child processes to write their results
     // TODO Fork a child to analyze each specified file (names are argv[1], argv[2], ...)
