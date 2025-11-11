@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <bits/fcntl-linux.h>
+#include <fcntl.h>
 
 #define ALPHABET_LEN 26
 
@@ -19,17 +19,31 @@
  * Returns 0 on success or -1 on error.
  */
 int count_letters(const char *file_name, int *counts) {
-	int fd = open(file_name, O_RDONLY ,0777); // ok so maybe this shouldn't be all permissions but here we are
-	if(fd == -1){
-		perror("open");
+	FILE *fd = fopen(file_name,"rb"); // ok so maybe this shouldn't be all permissions but here we are
+	if(fd == NULL){
+		perror("fopen");
 		return -1;
 	}
-	const char *readin[getpagesize()];
+	int size = getpagesize();
+	char readin[size];
     // I googled this a getpagesize is better than a macro for page table size.
-	read(fd, readin, 1);// is this right at all?
-
-
-
+        int n_bytes;
+	while ((n_bytes = fread(&readin, size, 1, fd)) > 0){ // is this right at all?
+		if (n_bytes == -1){
+			perror("read");
+			fclose(fd);
+			return -1;
+		}	
+		for (int i = 0; i < n_bytes; i++){
+			int current = tolower(readin[i]);
+			if (current >= 97 && current <= 122){
+				counts[current - 97]++;
+			}
+				
+		}
+	}
+	fclose(fd);	
+	return 0;
 }
 
 /*
@@ -42,7 +56,7 @@ int count_letters(const char *file_name, int *counts) {
  */
 int process_file(const char *file_name, int out_fd) {
     int counts[ALPHABET_LEN] = {0};
-    int result = count_letters(file_name, &counts);
+    int result = count_letters(file_name, counts);
     if(result == -1){
    	//TODO error
     	return -1;
@@ -61,7 +75,7 @@ int main(int argc, char **argv) {
         // No files to consume, return immediately
         return 0;
     }
-   char results[argc];
+//   char results[argc];
 
     int fds[2];
     int child_pipe = pipe(fds);
@@ -86,22 +100,45 @@ int main(int argc, char **argv) {
             if (process_file(argv[i], fds[1]) == -1){
                 close(fds[0]);
                 close(fds[1]);
-                return -1;
+                exit(1);//return -1;
             }
 
-            if (write()){
-
-            }
+	    if(close(fds[1]) == -1){
+	    	perror("close");
+		exit(1);	
+	    }
+	   exit(0); 
         }
     }
-
+    if (close(fds[1] == -1)){
+    	perror("close");
+	close(fds[0]);
+	return -1;
+    } 
+    int counts[ALPHABET_LEN];
+    int temp[ALPHABET_LEN];
+    int nbytes;
+    while ((nbytes = read(fds[0], &temp, sizeof(int))) > 0) {
+    	if(nbytes == -1){
+		perror("read");
+		close(fds[0]);
+		return -1;
+	}	
+	for(int index = 0; index < ALPHABET_LEN; index++){
+		counts[index] = counts[index] + temp[index];
+	}
+	if (close(fds[0]) == -1){
+		perror("close");
+		return -1;
+	}
+    }
 
     // TODO Fork a child to analyze each specified file (names are argv[1], argv[2], ...)
     // TODO Aggregate all the results together by reading from the pipe in the parent
 
     // TODO Change this code to print out the total count of each letter (case insensitive)
     for (int i = 0; i < ALPHABET_LEN; i++) {
-        printf("%c Count: %d\n", 'a' + i, -1);
+        printf("%c Count: %d\n", 'a' + i, counts[i]);
     }
     return 0;
 }
