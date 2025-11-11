@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <bits/fcntl-linux.h>
 
 #define ALPHABET_LEN 26
 
@@ -18,12 +19,13 @@
  * Returns 0 on success or -1 on error.
  */
 int count_letters(const char *file_name, int *counts) {
-	int fd = open(file_name,O_RDONLY,0777) // ok so maybe this shouldn't be all permissions but here we are 
+	int fd = open(file_name, O_RDONLY ,0777); // ok so maybe this shouldn't be all permissions but here we are
 	if(fd == -1){
-		perror("open"); 		 
+		perror("open");
 		return -1;
 	}
-	const char *readin[getpagesize()] = {0};// I googled this a getpagesize is better than a macro for page table size. 
+	const char *readin[getpagesize()];
+    // I googled this a getpagesize is better than a macro for page table size.
 	read(fd, readin, 1);// is this right at all?
 
 
@@ -45,9 +47,9 @@ int process_file(const char *file_name, int out_fd) {
    	//TODO error
     	return -1;
     }
-    else if (write(pipe_fds[1], &counts, sizeof(int)) == -1) {
+    else if (write(out_fd, &counts, sizeof(int)) == -1) {
     	perror("write");
-        close(pipe_fds[1]);
+        close(out_fd);
 	return -1;
      }
 
