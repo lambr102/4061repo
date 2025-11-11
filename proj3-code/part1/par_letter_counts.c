@@ -28,7 +28,7 @@ int count_letters(const char *file_name, int *counts) {
 	char readin[size];
     // I googled this a getpagesize is better than a macro for page table size.
         int n_bytes;
-	while ((n_bytes = fread(&readin, size, 1, fd)) > 0){ // is this right at all?
+	while ((n_bytes = fread(readin, 1 ,size, fd)) > 0){ // is this right at all?
 		if (n_bytes == -1){
 			perror("read");
 			fclose(fd);
@@ -61,7 +61,7 @@ int process_file(const char *file_name, int out_fd) {
    	//TODO error
     	return -1;
     }
-    else if (write(out_fd, &counts, sizeof(int)) == -1) {
+    else if (write(out_fd, &counts, sizeof(counts)) == -1) {
     	perror("write");
         close(out_fd);
 	return -1;
@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
         perror("pipe");
         return 1;
     }
-    for (int i = 0; i < argc; i ++){
+    for (int i = 1; i < argc; i ++){
         pid_t child_pid = fork();
         if (child_pid == -1) {
             perror("fork");
@@ -110,15 +110,15 @@ int main(int argc, char **argv) {
 	   exit(0); 
         }
     }
-    if (close(fds[1] == -1)){
+    if (close(fds[1]) == -1){
     	perror("close");
 	close(fds[0]);
 	return -1;
     } 
-    int counts[ALPHABET_LEN];
+    int counts[ALPHABET_LEN] = {0};
     int temp[ALPHABET_LEN];
     int nbytes;
-    while ((nbytes = read(fds[0], &temp, sizeof(int))) > 0) {
+    while ((nbytes = read(fds[0], &temp, sizeof(temp))) > 0) {
     	if(nbytes == -1){
 		perror("read");
 		close(fds[0]);
