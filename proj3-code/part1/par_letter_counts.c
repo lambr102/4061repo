@@ -23,6 +23,10 @@ int count_letters(const char *file_name, int *counts) {
 		perror("open"); 		 
 		return -1;
 	}
+	const char *readin[getpagesize()] = {0};// I googled this a getpagesize is better than a macro for page table size. 
+	read(fd, readin, 1);// is this right at all?
+
+
 
 }
 
