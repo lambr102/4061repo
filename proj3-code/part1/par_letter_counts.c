@@ -131,18 +131,19 @@ int main(int argc, char **argv) {
 	for(int index = 0; index < ALPHABET_LEN; index++){
 		counts[index] = counts[index] + temp[index];
 	}
-	if (close(fds[0]) == -1){
+}
+    if (close(fds[0]) == -1){
 		perror("close");
 		return -1;
-	}
     }
+
 
     // TODO Fork a child to analyze each specified file (names are argv[1], argv[2], ...)
     // TODO Aggregate all the results together by reading from the pipe in the parent
 
     // TODO Change this code to print out the total count of each letter (case insensitive)
     for (int i = 0; i < ALPHABET_LEN; i++) {
-        printf("%c Count: %d\n", 'a' + i, counts[i]);
+	printf("%c Count: %d\n", 'a' + i, counts[i]);
     }
 
 
