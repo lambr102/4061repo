@@ -26,9 +26,8 @@ int count_letters(const char *file_name, int *counts) {
 	}
 	int size = getpagesize();
 	char readin[size];
-    // I googled this a getpagesize is better than a macro for page table size.
-        int n_bytes;
-	while ((n_bytes = fread(readin, 1 ,size, fd)) > 0){ // is this right at all?
+    int n_bytes;
+	while ((n_bytes = fread(readin, 1 ,size, fd)) > 0){ 
 		if (n_bytes == -1){
 			perror("read");
 			fclose(fd);
@@ -73,8 +72,6 @@ int main(int argc, char **argv) {
         // No files to consume, return immediately
         return 0;
     }
-//   char results[argc];
-
     int fds[2];
     int child_pipe = pipe(fds);
     if (child_pipe < 0){
@@ -124,7 +121,6 @@ int main(int argc, char **argv) {
             close(fds[0]);
             return -1;
         }
-
     }
 
     while ((nbytes = read(fds[0], &temp, sizeof(temp))) > 0) {
