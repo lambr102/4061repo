@@ -71,8 +71,8 @@ int run_pipelined_commands(strvec_t *tokens) {
             return -1;
         } else if (child == 0){
             if (i == 0){
-                run_piped_command(temp_vec, pipe_fds, num_pipes, start_idx, end_idx);
-            }
+                run_piped_command(temp_vec, pipe_fds, num_pipes, -1, i +1);
+            } else if ()
         }
     }
     return 0;
