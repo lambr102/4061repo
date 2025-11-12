@@ -3,10 +3,10 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <string.h>
 
 #include "string_vector.h"
 
@@ -27,21 +27,25 @@
  * Returns 0 on success or -1 on error.
  */
 int run_piped_command(strvec_t *tokens, int *pipes, int n_pipes, int in_idx, int out_idx) {
-    if (in_idx != -1){
-        if (dup2(pipes[in_idx], STDIN_FILENO) == -1){
+    if (in_idx != -1) {
+        if (dup2(pipes[2 * in_idx], STDIN_FILENO) == -1) {
             perror("dup2");
             return -1;
         }
     }
-    if (out_idx != -1){
-        if (dup2(pipes[out_idx], STDIN_FILENO) == -1){
+    if (out_idx != -1) {
+        if (dup2(pipes[2 * out_idx + 1], STDOUT_FILENO) == -1) {
             perror("dup2");
             return -1;
         }
     }
-    // Dup2 inputs/outputs
-    if (run_command(tokens) == -1){
-        printf("Error on Run Command");
+    for (int i = 0; i < 2 * n_pipes; i++) {
+        if (i != in_idx && i != out_idx) {
+            close(pipes[i]);
+        }
+    }
+    if (run_command(tokens) == -1) {
+        perror("run_command");
         return -1;
     }
     return 0;
@@ -50,9 +54,10 @@ int run_piped_command(strvec_t *tokens, int *pipes, int n_pipes, int in_idx, int
 int run_pipelined_commands(strvec_t *tokens) {
     int num_pipes = strvec_num_occurrences(tokens, "|");
     int *pipe_fds = malloc(2 * num_pipes * sizeof(int));
-
-    int start_idx = 0;
-    int end_idx = 0;
+    if (!pipe_fds) {
+        perror("malloc");
+        return -1;
+    }
 
     for (int i = 0; i < num_pipes; i++) {
         if (pipe(pipe_fds + 2 * i) == -1) {
@@ -66,37 +71,89 @@ int run_pipelined_commands(strvec_t *tokens) {
         }
     }
 
-
-    for (int i = 0; i < num_pipes; i ++){
-        strvec_t temp_vec;
-        strvec_init(&temp_vec);
-
-        char *character;
-        for (int j = 0; strcmp("|", (character = strvec_get(tokens, j))) != 0; j++ ){
-            if (strvec_add(&temp_vec, character) == -1){
-                free(pipe_fds);
-                return -1;
-            }
-            end_idx ++;
-        }
-        if (strvec_slice(tokens, &temp_vec, start_idx, end_idx) == -1){
-            return -1;
-        }
-        pid_t child = fork();
-        if (child == -1){
-            perror("fork");
-            free(pipe_fds);
-            return -1;
-        } else if (child == 0){
-            if (i == 0){
-                run_piped_command(&temp_vec, pipe_fds, num_pipes, -1, i +1);
-            } else if (i == num_pipes -1){
-                run_piped_command(&temp_vec, pipe_fds, num_pipes, i -1, -1);
-            } else {
-                run_piped_command(&temp_vec, pipe_fds, num_pipes, i-1, i);
-            }
-        }
-
+    int num_cmds = num_pipes + 1;
+    pid_t *pids = malloc(num_cmds * sizeof(pid_t));
+    if (!pids) {
+        perror("malloc");
+        for (int i = 0; i < 2 * num_pipes; i++)
+            close(pipe_fds[i]);
+        free(pipe_fds);
+        return -1;
     }
+
+    int start_idx = 0;
+    for (int cmd = 0; cmd < num_cmds; cmd++) {
+        int end_idx = -1;
+        for (int j = start_idx; j < (int) tokens->length; j++) {
+            char *tok = strvec_get(tokens, j);
+            if (tok && strcmp(tok, "|") == 0) {
+                end_idx = j;
+                break;
+            }
+        }
+        if (end_idx == -1) {
+            end_idx = tokens->length;
+        }
+
+        strvec_t temp_vec;
+        if (strvec_slice(tokens, &temp_vec, start_idx, end_idx) == -1) {
+            for (int i = 0; i < 2 * num_pipes; i++)
+                close(pipe_fds[i]);
+            free(pipe_fds);
+            free(pids);
+            return -1;
+        }
+
+        pid_t child = fork();
+        if (child == -1) {
+            perror("fork");
+            strvec_clear(&temp_vec);
+            for (int i = 0; i < 2 * num_pipes; i++)
+                close(pipe_fds[i]);
+            free(pipe_fds);
+            free(pids);
+            return -1;
+        } else if (child == 0) {
+            int in_idx;
+            int out_idx;
+
+            if (cmd == 0) {
+                in_idx = -1;
+            } else {
+                in_idx = (cmd - 1) * 2;
+            }
+            if (cmd == num_cmds - 1) {
+                out_idx = -1;
+            } else {
+                out_idx = (2 * cmd);
+            }
+            if (run_piped_command(&temp_vec, pipe_fds, num_pipes, in_idx, out_idx) == -1) {
+                // error stuff
+                exit(1);
+            }
+
+            strvec_clear(&temp_vec);
+            free(pids);
+            free(pipe_fds);
+            exit(0);
+        }
+
+        pids[cmd] = child;
+        strvec_clear(&temp_vec);
+
+        start_idx = end_idx + 1;
+    }
+
+    for (int i = 0; i < 2 * num_pipes; i++) {
+        close(pipe_fds[i]);
+    }
+
+    free(pipe_fds);
+
+    for (int i = 0; i < num_pipes + 1; i++) {
+        wait(NULL);
+    }
+    free(pids);
+
     return 0;
 }

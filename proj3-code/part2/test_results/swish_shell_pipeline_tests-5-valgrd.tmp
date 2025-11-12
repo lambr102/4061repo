@@ -1,0 +1,24 @@
+==74583== Memcheck, a memory error detector
+==74583== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==74583== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==74583== Command: ./swish
+==74583== Parent PID: 74511
+==74583== 
+==74589== Invalid read of size 4
+==74589==    at 0x1094B0: run_piped_command (swish_funcs.c:31)
+==74589==    by 0x109987: run_pipelined_commands (swish_funcs.c:130)
+==74589==    by 0x108ECB: main (swish.c:51)
+==74589==  Address 0x4a39d60 is 0 bytes after a block of size 16 alloc'd
+==74588== Invalid read of size 4
+==74588==    at 0x109500: run_piped_command (swish_funcs.c:37)
+==74589==    at 0x4865058: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so)
+==74589==    by 0x109603: run_pipelined_commands (swish_funcs.c:56)
+==74588==    by 0x109987: run_pipelined_commands (swish_funcs.c:130)
+==74588==    by 0x108ECB: main (swish.c:51)
+==74589==    by 0x108ECB: main (swish.c:51)
+==74589== 
+==74588==  Address 0x4a39d64 is 4 bytes after a block of size 16 alloc'd
+==74588==    at 0x4865058: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-arm64-linux.so)
+==74588==    by 0x109603: run_pipelined_commands (swish_funcs.c:56)
+==74588==    by 0x108ECB: main (swish.c:51)
+==74588== 

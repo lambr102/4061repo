@@ -1,0 +1,15 @@
+==74515== Memcheck, a memory error detector
+==74515== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==74515== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==74515== Command: ./swish
+==74515== Parent PID: 74511
+==74515== 
+==74515== 
+==74515== HEAP SUMMARY:
+==74515==     in use at exit: 0 bytes in 0 blocks
+==74515==   total heap usage: 16 allocs, 16 frees, 2,229 bytes allocated
+==74515== 
+==74515== All heap blocks were freed -- no leaks are possible
+==74515== 
+==74515== For lists of detected and suppressed errors, rerun with: -s
+==74515== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
