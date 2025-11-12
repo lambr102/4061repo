@@ -118,6 +118,10 @@ int main(int argc, char **argv) {
     int counts[ALPHABET_LEN] = {0};
     int temp[ALPHABET_LEN];
     int nbytes;
+    for(int waiter = 1; waiter < argc; waiter++){
+    	wait(NULL);
+    }
+
     while ((nbytes = read(fds[0], &temp, sizeof(temp))) > 0) {
     	if(nbytes == -1){
 		perror("read");
@@ -140,5 +144,7 @@ int main(int argc, char **argv) {
     for (int i = 0; i < ALPHABET_LEN; i++) {
         printf("%c Count: %d\n", 'a' + i, counts[i]);
     }
+
+
     return 0;
 }
