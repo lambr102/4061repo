@@ -33,16 +33,15 @@ int count_letters(const char *file_name, int *counts) {
 			perror("read");
 			fclose(fd);
 			return -1;
-		}	
+		}
 		for (int i = 0; i < n_bytes; i++){
 			int current = tolower(readin[i]);
 			if (current >= 97 && current <= 122){
 				counts[current - 97]++;
 			}
-				
 		}
 	}
-	fclose(fd);	
+	fclose(fd);
 	return 0;
 }
 
@@ -58,15 +57,14 @@ int process_file(const char *file_name, int out_fd) {
     int counts[ALPHABET_LEN] = {0};
     int result = count_letters(file_name, counts);
     if(result == -1){
-   	//TODO error
+        close(out_fd);
     	return -1;
     }
     else if (write(out_fd, &counts, sizeof(counts)) == -1) {
     	perror("write");
         close(out_fd);
-	return -1;
-     }
-
+	    return -1;
+    }
     return 0;
 }
 
@@ -91,7 +89,7 @@ int main(int argc, char **argv) {
             close(fds[1]);
             return 1;
         } else if (child_pid == 0){
-            if (close(fds[0])){
+            if (close(fds[0]) == -1){
                 perror("close");
                 close(fds[1]);
                 exit(1);
@@ -100,38 +98,46 @@ int main(int argc, char **argv) {
             if (process_file(argv[i], fds[1]) == -1){
                 close(fds[0]);
                 close(fds[1]);
-                exit(1);//return -1;
+                exit(1);
             }
 
 	    if(close(fds[1]) == -1){
 	    	perror("close");
-		exit(1);	
+		    exit(1);
 	    }
-	   exit(0); 
+	    exit(0);
         }
     }
     if (close(fds[1]) == -1){
     	perror("close");
-	close(fds[0]);
-	return -1;
-    } 
+	    close(fds[0]);
+	    return -1;
+    }
     int counts[ALPHABET_LEN] = {0};
     int temp[ALPHABET_LEN];
     int nbytes;
+    int status;
     for(int waiter = 1; waiter < argc; waiter++){
-    	wait(NULL);
+    	wait(&status);
+        if (!WIFEXITED(status)){
+            perror("waiit");
+            close(fds[0]);
+            return -1;
+        }
+
     }
 
     while ((nbytes = read(fds[0], &temp, sizeof(temp))) > 0) {
     	if(nbytes == -1){
-		perror("read");
-		close(fds[0]);
-		return -1;
-	}	
-	for(int index = 0; index < ALPHABET_LEN; index++){
-		counts[index] = counts[index] + temp[index];
-	}
-}
+            perror("read");
+            close(fds[0]);
+            return -1;
+	    }
+        for(int index = 0; index < ALPHABET_LEN; index++){
+            counts[index] = counts[index] + temp[index];
+        }
+    }
+
     if (close(fds[0]) == -1){
 		perror("close");
 		return -1;
@@ -143,7 +149,7 @@ int main(int argc, char **argv) {
 
     // TODO Change this code to print out the total count of each letter (case insensitive)
     for (int i = 0; i < ALPHABET_LEN; i++) {
-	printf("%c Count: %d\n", 'a' + i, counts[i]);
+	    printf("%c Count: %d\n", 'a' + i, counts[i]);
     }
 
 
