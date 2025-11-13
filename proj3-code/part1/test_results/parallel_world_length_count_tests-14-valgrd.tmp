@@ -1,69 +1,69 @@
-==33944== Memcheck, a memory error detector
-==33944== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==33944== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
-==33944== Command: ./par_letter_counts test_cases/resources/large_upper.txt test_cases/resources/large_upper_2.txt test_cases/resources/large_upper_3.txt test_cases/resources/large_upper_4.txt test_cases/resources/large_upper_5.txt test_cases/resources/large_upper_6.txt
-==33944== Parent PID: 33811
-==33944== 
-==33948== 
-==33948== HEAP SUMMARY:
-==33948==     in use at exit: 0 bytes in 0 blocks
-==33948==   total heap usage: 2 allocs, 2 frees, 4,568 bytes allocated
-==33948== 
-==33948== All heap blocks were freed -- no leaks are possible
-==33946== 
-==33946== HEAP SUMMARY:
-==33946==     in use at exit: 0 bytes in 0 blocks
-==33946==   total heap usage: 2 allocs, 2 frees, 4,568 bytes allocated
-==33946== 
-==33948== 
-==33948== For lists of detected and suppressed errors, rerun with: -s
-==33949== 
-==33949== HEAP SUMMARY:
-==33949==     in use at exit: 0 bytes in 0 blocks
-==33949==   total heap usage: 2 allocs, 2 frees, 4,568 bytes allocated
-==33949== 
-==33946== All heap blocks were freed -- no leaks are possible
-==33946== 
-==33948== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==33949== All heap blocks were freed -- no leaks are possible
-==33949== 
-==33946== For lists of detected and suppressed errors, rerun with: -s
-==33946== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==33951== 
-==33951== HEAP SUMMARY:
-==33951==     in use at exit: 0 bytes in 0 blocks
-==33951==   total heap usage: 2 allocs, 2 frees, 4,568 bytes allocated
-==33951== 
-==33949== For lists of detected and suppressed errors, rerun with: -s
-==33949== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==33950== 
-==33950== HEAP SUMMARY:
-==33950==     in use at exit: 0 bytes in 0 blocks
-==33950==   total heap usage: 2 allocs, 2 frees, 4,568 bytes allocated
-==33950== 
-==33947== 
-==33947== HEAP SUMMARY:
-==33947==     in use at exit: 0 bytes in 0 blocks
-==33947==   total heap usage: 2 allocs, 2 frees, 4,568 bytes allocated
-==33947== 
-==33951== All heap blocks were freed -- no leaks are possible
-==33951== 
-==33950== All heap blocks were freed -- no leaks are possible
-==33947== All heap blocks were freed -- no leaks are possible
-==33947== 
-==33951== For lists of detected and suppressed errors, rerun with: -s
-==33951== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==33950== 
-==33950== For lists of detected and suppressed errors, rerun with: -s
-==33947== For lists of detected and suppressed errors, rerun with: -s
-==33947== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==33950== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
-==33944== 
-==33944== HEAP SUMMARY:
-==33944==     in use at exit: 0 bytes in 0 blocks
-==33944==   total heap usage: 1 allocs, 1 frees, 1,024 bytes allocated
-==33944== 
-==33944== All heap blocks were freed -- no leaks are possible
-==33944== 
-==33944== For lists of detected and suppressed errors, rerun with: -s
-==33944== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==94683== Memcheck, a memory error detector
+==94683== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==94683== Using Valgrind-3.18.1 and LibVEX; rerun with -h for copyright info
+==94683== Command: ./par_letter_counts test_cases/resources/large_upper.txt test_cases/resources/large_upper_2.txt test_cases/resources/large_upper_3.txt test_cases/resources/large_upper_4.txt test_cases/resources/large_upper_5.txt test_cases/resources/large_upper_6.txt
+==94683== Parent PID: 94564
+==94683== 
+==94705== 
+==94705== HEAP SUMMARY:
+==94705==     in use at exit: 0 bytes in 0 blocks
+==94705==   total heap usage: 2 allocs, 2 frees, 4,568 bytes allocated
+==94705== 
+==94705== All heap blocks were freed -- no leaks are possible
+==94707== 
+==94707== HEAP SUMMARY:
+==94707==     in use at exit: 0 bytes in 0 blocks
+==94707==   total heap usage: 2 allocs, 2 frees, 4,568 bytes allocated
+==94707== 
+==94705== 
+==94705== For lists of detected and suppressed errors, rerun with: -s
+==94707== All heap blocks were freed -- no leaks are possible
+==94707== 
+==94705== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==94710== 
+==94707== For lists of detected and suppressed errors, rerun with: -s
+==94707== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==94706== 
+==94706== HEAP SUMMARY:
+==94706==     in use at exit: 0 bytes in 0 blocks
+==94706==   total heap usage: 2 allocs, 2 frees, 4,568 bytes allocated
+==94706== 
+==94710== HEAP SUMMARY:
+==94710==     in use at exit: 0 bytes in 0 blocks
+==94710==   total heap usage: 2 allocs, 2 frees, 4,568 bytes allocated
+==94710== 
+==94710== All heap blocks were freed -- no leaks are possible
+==94709== 
+==94709== HEAP SUMMARY:
+==94709==     in use at exit: 0 bytes in 0 blocks
+==94709==   total heap usage: 2 allocs, 2 frees, 4,568 bytes allocated
+==94709== 
+==94708== 
+==94708== HEAP SUMMARY:
+==94708==     in use at exit: 0 bytes in 0 blocks
+==94708==   total heap usage: 2 allocs, 2 frees, 4,568 bytes allocated
+==94708== 
+==94706== All heap blocks were freed -- no leaks are possible
+==94706== 
+==94710== 
+==94710== For lists of detected and suppressed errors, rerun with: -s
+==94709== All heap blocks were freed -- no leaks are possible
+==94709== 
+==94708== All heap blocks were freed -- no leaks are possible
+==94708== 
+==94706== For lists of detected and suppressed errors, rerun with: -s
+==94706== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==94710== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==94709== For lists of detected and suppressed errors, rerun with: -s
+==94709== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==94708== For lists of detected and suppressed errors, rerun with: -s
+==94708== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==94683== 
+==94683== HEAP SUMMARY:
+==94683==     in use at exit: 0 bytes in 0 blocks
+==94683==   total heap usage: 1 allocs, 1 frees, 1,024 bytes allocated
+==94683== 
+==94683== All heap blocks were freed -- no leaks are possible
+==94683== 
+==94683== For lists of detected and suppressed errors, rerun with: -s
+==94683== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
